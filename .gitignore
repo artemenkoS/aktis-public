@@ -1,0 +1,11 @@
+/client/node_modules
+/server/node_modules
+postgres-data
+
+/client/dist
+/server/dist
+/.history
+
+.DS_Store
+.idea/
+*.local

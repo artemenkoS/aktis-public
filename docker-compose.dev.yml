@@ -1,0 +1,48 @@
+version: "3"
+services:
+  postgres:
+    image: "postgres:16"
+    environment:
+      - POSTGRES_PASSWORD=aktis
+      - TZ=UTC
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+      - ./backups:/backups
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    volumes:
+      - /app/node_modules/
+      - ./server:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - PG_USER=postgres
+      - PG_DATABASE=aktis_patients
+      - PG_HOST=postgres
+      - PG_PORT=5432
+      - PG_PASSWORD=aktis
+      - PORT=8000
+
+  client:
+    stdin_open: true
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - /app/node_modules/
+      - ./client:/app
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=serezha@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=aktis
+    depends_on:
+      - postgres
